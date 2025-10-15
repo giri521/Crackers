@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAI GANESHA CRACKERS - BILLING TOOL</title>
+    <style>
+        /* --- GLOBAL FONT CORRECTION --- */
+        body { 
+            font-family: 'Open Sans', Arial, sans-serif; /* Clean font stack */
+            margin: 0; padding: 0; color: #f0f0f0; background-color: #000; 
+        }
+
+        /* --- SCREEN INPUT VIEW STYLES --- */
+        #video-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; }
+        #video-background iframe { width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: -1; }
+        #content { position: relative; z-index: 1; padding: 10px; max-width: 1200px; margin: 10px auto; background-color: rgba(10, 10, 10, 0.75); border-radius: 5px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+        .header-container { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+        .logo { width: 40px; height: 40px; margin: 0 10px; border-radius: 50%; box-shadow: 0 0 5px #ffd700; }
+        h1 { font-size: 1.5em; color: #ffd700; text-shadow: 0 0 5px rgba(255, 215, 0, 0.7); margin: 0; line-height: 1.2; }
+        h2 { font-size: 1.2em; color: #fff; margin-top: 5px; }
+        
+        /* Customer Info Grid */
+        #customer-info-section { background-color: rgba(50, 50, 50, 0.8); padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ff4500; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .customer-input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffd700; font-size: 0.9em; }
+        .customer-input-group input, .customer-input-group select { 
+            width: 100%; padding: 8px; border: 1px solid #ff4500; 
+            background-color: #1a1a1a; color: #fff; border-radius: 3px; 
+            box-sizing: border-box; 
+        }
+        .customer-input-group select {
+            /* Ensures select box background is also dark */
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23fff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 8px top 50%;
+            background-size: 16px 16px;
+            padding-right: 30px; /* space for the arrow */
+        }
+        
+        /* Search Section */
+        #search-section { background-color: rgba(50, 50, 50, 0.8); padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ffd700; }
+        #search-section h3 { color: #ffd700; margin-top: 0; margin-bottom: 10px; }
+        #search-input { width: 100%; padding: 10px; border: 1px solid #ffd700; background-color: #1a1a1a; color: #fff; border-radius: 3px; }
+        
+        /* Contact Section */
+        .contact-section-top { background-color: rgba(37, 211, 102, 0.2); padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+        .contact-section-top h3 { margin-top: 0; color: #fff; }
+        .contact-buttons-top { display: flex; flex-wrap: wrap; gap: 10px; }
+        .whatsapp-btn-top { 
+            display: inline-flex; align-items: center; padding: 8px 15px; 
+            background-color: #25d366; color: white; text-decoration: none; 
+            border-radius: 5px; font-weight: bold; 
+        }
+        .whatsapp-btn-top span.name { font-weight: normal; margin-left: 5px; }
+        
+        /* Card Layout */
+        .card-container { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; }
+        .card { 
+            flex: 1; min-width: 300px; background-color: rgba(30, 30, 30, 0.85); 
+            border: 1px solid #ff4500; border-radius: 5px; 
+        }
+        .card-header { 
+            background-color: rgba(255, 69, 0, 0.2); color: #00ff00; 
+            padding: 10px; margin: 0; border-bottom: 1px solid #00ff00; 
+        }
+        
+        /* Table Styles */
+        .items-table { width: 100%; border-collapse: collapse; }
+        .items-table th, .items-table td { 
+            padding: 8px; text-align: left; border-bottom: 1px solid #444; 
+        }
+        .items-table th { 
+            background-color: rgba(0, 0, 0, 0.4); color: #ffd700; 
+            position: sticky; top: 0; 
+        }
+        .items-table tr:hover { background-color: rgba(255, 215, 0, 0.1); }
+        .price-unit { color: #ffd700; }
+        .input-qty { 
+            width: 60px; padding: 5px; background-color: #1a1a1a; 
+            color: #fff; border: 1px solid #ff4500; border-radius: 3px; 
+            text-align: center; 
+        }
+        .item-total { color: #ff4500; font-weight: bold; }
+        
+        /* Total Section */
+        #total-section { 
+            background-color: #1a1a1a; border: 2px solid #ffd700; 
+            padding: 15px; border-radius: 5px; margin-top: 20px; 
+        }
+        .discount-input-container { 
+            display: flex; align-items: center; margin-bottom: 15px; 
+        }
+        .discount-input-container label { 
+            margin-right: 10px; color: #ffd700; font-weight: bold; 
+        }
+        .discount-input-container input { 
+            width: 80px; padding: 8px; background-color: #1a1a1a; 
+            color: #fff; border: 1px solid #ff4500; border-radius: 3px; 
+        }
+        .totals-display p { 
+            display: flex; justify-content: space-between; 
+            margin: 8px 0; 
+        }
+        .totals-display .label { color: #ffd700; }
+        #final-total-display { color: #00ff00; font-size: 1.2em; font-weight: bold; }
+        .print-btn { 
+            width: 100%; padding: 12px; background-color: #ffd700; 
+            color: #1a1a1a; border: none; border-radius: 5px; 
+            font-weight: bold; cursor: pointer; margin-top: 10px; 
+            font-size: 1.1em; 
+        }
+        
+        /* --- PRINT INVOICE TABLE STYLES --- */
+        .print-invoice-body { font-family: Arial, Helvetica, sans-serif; color: #000; } /* Set clean print font */
+        .invoice-container { border: 1px solid #000; background-color: #fff; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .print-header { text-align: center; margin-bottom: 20px; }
+        .print-header h1 { color: #000; text-shadow: none; margin-bottom: 5px; }
+        .print-header h2 { color: #555; margin-top: 0; }
+        .invoice-customer-details { margin-bottom: 20px; }
+        .invoice-customer-details p { margin: 5px 0; }
+        .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .invoice-table th, .invoice-table td { border: 1px solid #ccc; padding: 8px; }
+        .invoice-table th { background-color: #f0f0f0; }
+        .invoice-sub-total-row th { background-color: #e0e0e0; }
+        .invoice-final-total-row th { background-color: #ddd; border-top: 2px solid #000; font-size: 1.1em; }
+        .invoice-footer { text-align: center; padding-top: 15px; border-top: 1px solid #ccc; }
+        .invoice-footer-contacts { font-size: 0.9em; color: #555; margin-top: 10px; }
+        
+        /* --- PRINT MEDIA QUERY --- */
+        @media print { #content { display: none; } }
+        
+        /* --- RESPONSIVENESS --- */
+        @media (max-width: 600px) { 
+            .customer-input-group { grid-column: span 2; } 
+            .card { min-width: 100%; }
+            .contact-buttons-top { flex-direction: column; }
+        }
+        @media (min-width: 601px) and (max-width: 992px) { .card { flex: 1 1 calc(50% - 15px); } }
+        @media (min-width: 993px) { .card { flex: 1 1 calc(33.33% - 20px); } }
+        
+        /* Search highlight */
+        .highlight { background-color: rgba(255, 215, 0, 0.3); }
+    </style>
+</head>
+<body>
+
+    <div id="video-background"><iframe src="https://www.youtube.com/embed/Fsgl8UusmYU?controls=0&amp;showinfo=0&amp;rel=0&amp;autoplay=1&amp;loop=1&amp;mute=1&amp;playlist=Fsgl8UusmYU" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+    <div id="overlay"></div>
+
+    <div id="content">
+
+        <div class="header-container">
+            <img src="https://tse4.mm.bing.net/th/id/OIP.vfWsql4MmDj7kBcFJQMmsQHaHa?pid=Api&P=0&h=220" alt="Cracker Logo" class="logo">
+            <div><h1>JAI GANESHA CRACKERS</h1><h2>BILLING TOOL | SIMHADRIPURAM</h2></div>
+            <img src="https://tse4.mm.bing.net/th/id/OIP.vfWsql4MmDj7kBcFJQMmsQHaHa?pid=Api&P=0&h=220" alt="Cracker Logo" class="logo">
+        </div>
+        
+        <hr style="border-color: #ffd700;">
+
+        <div id="customer-info-section">
+            <div class="customer-input-group"><label for="customer-name">Customer Name</label><input type="text" id="customer-name" placeholder="Enter name" oninput="updatePrintInfo()"></div>
+            
+            <div class="customer-input-group">
+                <label for="customer-village">Village / Area</label>
+                <select id="customer-village" onchange="updatePrintInfo()">
+                    <option value="" disabled selected>Select Village</option>
+                    <option value="Agraharam">Agraharam</option>
+                    <option value="Ankalammagudur">Ankalammagudur</option>
+                    <option value="Balapanur">Balapanur</option>
+                    <option value="Bidinamcherla">Bidinamcherla</option>
+                    <option value="Chavvaripalle">Chavvaripalle</option>
+                    <option value="Devathapuram">Devathapuram</option>
+                    <option value="Duddekunta">Duddekunta</option>
+                    <option value="Gurjala">Gurjala</option>
+                    <option value="Himakuntla">Himakuntla</option>
+                    <option value="Jangamreddipalle">Jangamreddipalle</option>
+                    <option value="Kasanur">Kasanur</option>
+                    <option value="Lomada">Lomada</option>
+                    <option value="Maddulapaya">Maddulapaya</option>
+                    <option value="Nandyalampalle">Nandyalampalle</option>
+                    <option value="Nidivelagala">Nidivelagala</option>
+                    <option value="Pydipalem">Pydipalem</option>
+                    <option value="Ravulakolanu">Ravulakolanu</option>
+                    <option value="Simhadripuram">Simhadripuram</option>
+                    <option value="Sunkesula">Sunkesula</option>
+                </select>
+            </div>
+            
+            <div class="customer-input-group"><label for="customer-mobile">Customer Mobile</label><input type="tel" id="customer-mobile" placeholder="Enter number" oninput="updatePrintInfo()"></div>
+            
+            <div class="customer-input-group">
+                <label for="biller-name">Billed By</label>
+                <select id="biller-name" onchange="updatePrintInfo()">
+                    <option value="" disabled selected>Select Biller</option>
+                    <option value="SUBBA REDDY (7286936250)">SUBBA REDDY</option>
+                    <option value="ARUN KUMAR REDDY (9951186806)">ARUN KUMAR REDDY</option>
+                    <option value="AHKIL REDDY (9491779437)">AHKIL REDDY</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="search-section">
+            <h3>🔍 SEARCH PRODUCTS</h3>
+            <input type="text" id="search-input" placeholder="Type product name to search..." oninput="filterProducts()">
+        </div>
+
+        <div class="contact-section-top">
+            <h3>OWNER/STAFF CONTACTS (For Customers):</h3>
+            <div class="contact-buttons-top">
+                <a class="whatsapp-btn-top" href="https://wa.me/917286936250?text=Hello%20JAI%20GANESHA%20CRACKERS,%20I%20would%20like%20to%20place%20an%20order." target="_blank"><span class="icon whatsapp-icon"></span> 7286936250 <span class="name">(Subba Reddy)</span></a>
+                <a class="whatsapp-btn-top" href="https://wa.me/919951186806?text=Hello%20JAI%20GANESHA%20CRACKERS,%20I%20would%20like%20to%20place%20an%20order." target="_blank"><span class="icon whatsapp-icon"></span> 9951186806 <span class="name">(Arun Kumar)</span></a>
+                <a class="whatsapp-btn-top" href="https://wa.me/919491779437?text=Hello%20JAI%20GANESHA%20CRACKERS,%20I%20would%20like%20to%20place%20an%20order." target="_blank"><span class="icon whatsapp-icon"></span> 9491779437 <span class="name">(Ahkil Reddy)</span></a>
+            </div>
+        </div>
+        <hr style="border-color: #ffd700;">
+
+        <div id="billing-form">
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-header">SPARKLERS</h3>
+                    <table class="items-table" id="sparklers-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th style="width: 80px;">Price (₹)</th>
+                                <th style="width: 60px;">Qty</th>
+                                <th style="width: 90px;">Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sparklers-list"></tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3 class="card-header">FLOWER POTS</h3>
+                    <table class="items-table" id="flower-pots-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th style="width: 80px;">Price (₹)</th>
+                                <th style="width: 60px;">Qty</th>
+                                <th style="width: 90px;">Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="flower-pots-list"></tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3 class="card-header">GROUND ITEMS</h3>
+                    <table class="items-table" id="ground-items-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th style="width: 80px;">Price (₹)</th>
+                                <th style="width: 60px;">Qty</th>
+                                <th style="width: 90px;">Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ground-items-list"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-header">PENCILS & FOUNTAINS</h3>
+                    <table class="items-table" id="pencils-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th style="width: 80px;">Price (₹)</th>
+                                <th style="width: 60px;">Qty</th>
+                                <th style="width: 90px;">Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pencils-list"></tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3 class="card-header">ROCKETS & AIRBORNE</h3>
+                    <table class="items-table" id="rockets-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th style="width: 80px;">Price (₹)</th>
+                                <th style="width: 60px;">Qty</th>
+                                <th style="width: 90px;">Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rockets-list"></tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3 class="card-header">BOMBS (SOUND CRACKERS)</h3>
+                    <table class="items-table" id="bombs-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th style="width: 80px;">Price (₹)</th>
+                                <th style="width: 60px;">Qty</th>
+                                <th style="width: 90px;">Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bombs-list"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-header">GARLANDS (WALA)</h3>
+                    <table class="items-table" id="garlands-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th style="width: 80px;">Price (₹)</th>
+                                <th style="width: 60px;">Qty</th>
+                                <th style="width: 90px;">Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="garlands-list"></tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3 class="card-header">SHOTS & BIG ITEMS</h3>
+                    <table class="items-table" id="shots-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th style="width: 80px;">Price (₹)</th>
+                                <th style="width: 60px;">Qty</th>
+                                <th style="width: 90px;">Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shots-list"></tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3 class="card-header">CAPS / ACCESSORIES / GIFT BOXES</h3>
+                    <table class="items-table" id="misc-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th style="width: 80px;">Price (₹)</th>
+                                <th style="width: 60px;">Qty</th>
+                                <th style="width: 90px;">Total (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="misc-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="total-section">
+            <div class="discount-input-container">
+                <label for="discount-percent">Discount (%)</label>
+                <input type="number" id="discount-percent" value="0" min="0" max="100" oninput="calculateTotal()">
+            </div>
+            <div class="totals-display">
+                <p><span class="label">Sub Total:</span> ₹ <strong id="sub-total-display">0.00</strong></p>
+                <p><span class="label">Discount:</span> <span id="discount-percent-display">0%</span> (₹ <strong id="discount-display">0.00</strong>)</p>
+                <hr style="border-color: #ffd700; margin: 5px 0;">
+                <p><span class="label">FINAL TOTAL:</span> ₹ <span id="final-total-display">0.00</span></p>
+                <button onclick="printBillWithFilename()" class="print-btn">🖨️ Generate Printable Bill</button>
+            </div>
+        </div>
+    </div> 
+
+    <script>
+        const CRACKER_DATA = [
+            { name: "7CM ELECTRIC SPARKLERS (Box)", price: 16, category: "sparklers" }, { name: "10CM ELECTRIC SPARKLERS(100)", price: 29, category: "sparklers" }, { name: "12CM ELECTRIC SPARKLERS(100)", price: 33, category: "sparklers" }, { name: "15CM ELECTRIC SPARKLERS(100)", price: 66, category: "sparklers" }, { name: "15CM COLOUR SPARKLERS(100)", price: 69, category: "sparklers" }, { name: "30CM ELECTRIC SPARKLERS(100)", price: 66, category: "sparklers" }, { name: "30CM COLOUR SPARKLERS(100)", price: 69, category: "sparklers" }, { name: "50CM ELECTRIC SPARKLERS(5)", price: 264, category: "sparklers" },
+            { name: "FLOWER POT SMALL(10)", price: 98, category: "flower-pots" }, { name: "FLOWER POT BIG(10)", price: 110, category: "flower-pots" }, { name: "FLOWER POT SPECIAL(10)", price: 144, category: "flower-pots" }, { name: "FLOWER POT ASHOKA(10)", price: 186, category: "flower-pots" }, { name: "FLOWER POT COLOUR KOTI(10)", price: 340, category: "flower-pots" }, { name: "FLOWER POT MEGA COLOUR KOTI(10)", price: 740, category: "flower-pots" }, { name: "FLOWER POT PANJABI(10)", price: 1300, category: "flower-pots" }, { name: "LADDU FLOWER POT SMALL", price: 480, category: "flower-pots" }, { name: "LADDU FLOWER POT BIG", price: 960, category: "flower-pots" }, { name: "TRY COLOUR FLOWER POT", price: 540, category: "flower-pots" }, { name: "TIN FOUNTAIN", price: 172, category: "flower-pots" },
+            { name: "GROUND CHAKKAR BIG(10)", price: 80, category: "ground-items" }, { name: "GROUND CHAKKAR SPECIAL(10)", price: 130, category: "ground-items" }, { name: "G. CHAKKAR SPL. PLASTIC WHEEL(10)", price: 260, category: "ground-items" }, { name: "GROUND CHAKKAR DELUX(10)", price: 220, category: "ground-items" }, { name: "G. CHAKKAR DELUX PLASTIC WHEEL(10)", price: 346, category: "ground-items" }, { name: "WISILING WHEEL", price: 252, category: "ground-items" }, { name: "WIRE CHAKKAR", price: 286, category: "ground-items" },
+            { name: "7CM PENCIL(10)", price: 42, category: "pencils" }, { name: "10CM PENCIL(10)", price: 72, category: "pencils" }, { name: "12CM PENCIL(10)", price: 104, category: "pencils" }, { name: "15CM PENCIL(10)", price: 140, category: "pencils" }, { name: "18CM PENCIL(10)", price: 176, category: "pencils" }, { name: "Pop and Hot Pencil", price: 230, category: "pencils" }, { name: "SELFI STICK", price: 100, category: "pencils" }, { name: "18 INCH T-STAR(10)", price: 110, category: "pencils" }, { name: "48 INCH T-STAR(10)", price: 180, category: "pencils" }, { name: "emrolds", price: 70, category: "pencils" }, { name: "KIT KAT DLX(10)", price: 80, category: "pencils" }, { name: "PEACOCK FEATHER", price: 168, category: "pencils" },
+            { name: "BABY ROCKETS(10)", price: 80, category: "rockets" }, { name: "ROCKT BOMB(10)", price: 122, category: "rockets" }, { name: "LINIC EXPRSS(10)", price: 250, category: "rockets" }, { name: "2 SOUND ROCKET(10)", price: 270, category: "rockets" }, { name: "3 SOUND ROCKET(10)", price: 290, category: "rockets" }, { name: "SPINNER(10)", price: 160, category: "rockets" }, { name: "BUTTERFLY(10)", price: 100, category: "rockets" }, { name: "HELI CAPTOR(5)", price: 150, category: "rockets" }, { name: "MISILE", price: 240, category: "rockets" }, { name: "SKY LANTHER", price: 120, category: "rockets" },
+            { name: "RED BIJILI(50)", price: 28, category: "bombs" }, { name: "RED BIJILI(100)", price: 60, category: "bombs" }, { name: "HYDROGN BOMB(10)", price: 116, category: "bombs" }, { name: "King of King(10)", price: 150, category: "bombs" }, { name: "Classic Bomb(10)", price: 200, category: "bombs" }, { name: "DINOSAR BOMB", price: 320, category: "bombs" }, { name: "PAPER BOMB(1/4KG)", price: 106, category: "bombs" }, { name: "PAPER BOMB(1/2KG)", price: 212, category: "bombs" }, { name: "PAPER BOMB (KG)", price: 424, category: "bombs" }, { name: "CARROT BOMB(10)", price: 600, category: "bombs" },
+            { name: "28 CHORSA", price: 32, category: "garlands" }, { name: "24 DLX", price: 62, category: "garlands" }, { name: "50DLX", price: 160, category: "garlands" }, { name: "100DLX", price: 320, category: "garlands" }, { name: "100WALA", price: 58, category: "garlands" }, { name: "200WALA", price: 120, category: "garlands" }, { name: "1000WALA", price: 282, category: "garlands" }, { name: "2000WALA", price: 566, category: "garlands" }, { name: "5000WALA", price: 1420, category: "garlands" },
+            { name: "2''COMMETS(3)", price: 404, category: "shots" }, { name: "2\"COMMET(1)", price: 190, category: "shots" }, { name: "4'DOUBLE BALL", price: 1020, category: "shots" }, { name: "BADA PEACOCK", price: 840, category: "shots" }, { name: "GANGA JAMUNA", price: 120, category: "shots" }, { name: "7 COLOR SHOT", price: 154, category: "shots" }, { name: "12 SHOT MULTI COLOUR", price: 380, category: "shots" }, { name: "30 SHOT", price: 870, category: "shots" }, { name: "60 SHOT", price: 1740, category: "shots" }, { name: "120 SHOT", price: 3480, category: "shots" },
+            { name: "2/3 KURIVI", price: 20, category: "misc" }, { name: "3 1/2 LAKSHMI", price: 23, category: "misc" }, { name: "4''GOLD LAKSHMI dlx(5)", price: 50, category: "misc" }, { name: "4'' DLX lakshmi", price: 46, category: "misc" }, { name: "5\" DLX LAKSHMI(5)", price: 60, category: "misc" }, { name: "CHOTA FANCY", price: 80, category: "misc" }, { name: "smoke", price: 300, category: "misc" }, { name: "STAR MATCHES(600)", price: 1080, category: "misc" }, { name: "PHOTO FLASH", price: 90, category: "misc" }, { name: "ROLL CAPS", price: 128, category: "misc" }, { name: "POP POP", price: 620, category: "misc" }, { name: "BIG POP POP", price: 300, category: "misc" }, { name: "THROUGH BALL", price: 240, category: "misc" }, { name: "RIG CAPS", price: 16, category: "misc" }, { name: "MINI SIREN(5PCS)", price: 250, category: "misc" }, { name: "BATHI", price: 16, category: "misc" }, { name: "16 ITEM GIFT BOX", price: 680, category: "misc" }, { name: "21 ITM GIFT BOX", price: 820, category: "misc" }, { name: "25 ITEM GIFT BOX", price: 990, category: "misc" }, { name: "35 ITEM GIFT BOX", price: 1544, category: "misc" }, { name: "45 ITEM GIFT BOX", price: 2250, category: "misc" }, { name: "55 ITEM GIFT BOX", price: 2960, category: "misc" },
+        ];
+
+        let itemQuantities = new Map();
+
+        function renderItems() {
+            const categoryMapping = {
+                "sparklers": document.getElementById("sparklers-list"), 
+                "flower-pots": document.getElementById("flower-pots-list"),
+                "ground-items": document.getElementById("ground-items-list"), 
+                "pencils": document.getElementById("pencils-list"),
+                "rockets": document.getElementById("rockets-list"), 
+                "bombs": document.getElementById("bombs-list"),
+                "garlands": document.getElementById("garlands-list"), 
+                "shots": document.getElementById("shots-list"),
+                "misc": document.getElementById("misc-list"),
+            };
+
+            CRACKER_DATA.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.className = 'item-row';
+                row.innerHTML = `
+                    <td class="item-name">${item.name}</td>
+                    <td class="price-unit">${item.price.toFixed(0)}</td>
+                    <td><input type="number" class="input-qty" data-price="${item.price}" data-index="${index}" value="" min="0" oninput="calculateTotal()"></td>
+                    <td class="item-total" id="total-${index}">0.00</td>
+                `;
+                categoryMapping[item.category].appendChild(row);
+                itemQuantities.set(index, { qty: 0, price: item.price, name: item.name });
+            });
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            // Hide all items first
+            document.querySelectorAll('.item-row').forEach(row => {
+                row.style.display = 'none';
+                row.classList.remove('highlight');
+            });
+            
+            // Show only matching items and highlight them
+            if (searchTerm.trim() !== '') {
+                document.querySelectorAll('.item-row').forEach(row => {
+                    const itemName = row.querySelector('.item-name').textContent.toLowerCase();
+                    if (itemName.includes(searchTerm)) {
+                        row.style.display = '';
+                        row.classList.add('highlight');
+                        
+                        // Scroll to the first highlighted item
+                        if (document.querySelectorAll('.highlight').length === 1) {
+                            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+                });
+            } else {
+                // Show all items if search is empty
+                document.querySelectorAll('.item-row').forEach(row => {
+                    row.style.display = '';
+                });
+            }
+        }
+
+        function calculateTotal() {
+            let subTotal = 0;
+            const qtyInputs = document.querySelectorAll('.input-qty');
+            const discountPercent = parseFloat(document.getElementById('discount-percent').value) || 0;
+
+            qtyInputs.forEach((input) => {
+                const price = parseFloat(input.dataset.price);
+                const qty = parseInt(input.value) || 0;
+                const index = parseInt(input.dataset.index);
+                
+                const itemTotal = price * qty;
+                subTotal += itemTotal;
+
+                document.getElementById(`total-${index}`).textContent = itemTotal.toFixed(2);
+                itemQuantities.get(index).qty = qty;
+            });
+
+            const discountAmount = subTotal * (discountPercent / 100);
+            const finalTotal = subTotal - discountAmount;
+
+            // Update screen displays
+            document.getElementById("sub-total-display").textContent = subTotal.toFixed(2);
+            document.getElementById("discount-percent-display").textContent = discountPercent.toFixed(0) + '%';
+            document.getElementById("discount-display").textContent = discountAmount.toFixed(2);
+            document.getElementById("final-total-display").textContent = finalTotal.toFixed(2);
+        }
+
+        function updatePrintInfo() {
+            sessionStorage.setItem('printName', document.getElementById('customer-name').value || 'N/A');
+            sessionStorage.setItem('printVillage', document.getElementById('customer-village').value || 'N/A');
+            sessionStorage.setItem('printMobile', document.getElementById('customer-mobile').value || 'INVOICE');
+            sessionStorage.setItem('printBiller', document.getElementById('biller-name').value || 'N/A');
+        }
+
+        function generateBillHTML() {
+            let subTotal = 0;
+            let itemsHTML = '';
+            
+            const discountPercent = parseFloat(document.getElementById('discount-percent').value) || 0;
+
+            itemQuantities.forEach(item => {
+                if (item.qty > 0) {
+                    const itemTotal = item.qty * item.price;
+                    subTotal += itemTotal;
+
+                    itemsHTML += `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>${item.price.toFixed(2)}</td>
+                            <td>${item.qty}</td>
+                            <td>${itemTotal.toFixed(2)}</td>
+                        </tr>
+                    `;
+                }
+            });
+
+            if (itemsHTML === '') {
+                itemsHTML = '<tr><td colspan="4" style="text-align: center; color: #555;">No items selected.</td></tr>';
+            }
+
+            const discountAmount = subTotal * (discountPercent / 100);
+            const finalTotal = subTotal - discountAmount;
+            const mobile = sessionStorage.getItem('printMobile') || 'INVOICE';
+            const biller = sessionStorage.getItem('printBiller');
+            const billerName = biller.split(' (')[0] || biller;
+            const billerMobile = biller.includes('(') ? biller.substring(biller.indexOf('(') + 1, biller.indexOf(')')) : 'N/A';
+
+            // Extract all contacts for the footer
+            const allContacts = [
+                { name: 'SUBBA REDDY', mobile: '7286936250' },
+                { name: 'ARUN KUMAR REDDY', mobile: '9951186806' },
+                { name: 'AHKIL REDDY', mobile: '9491779437' },
+            ];
+            const contactFooterHTML = allContacts.map(c => `${c.name} (${c.mobile})`).join(' | ');
+
+            // Generate the full HTML content for the new print window
+            return `
+                <html lang="en">
+                <head>
+                    <title>${mobile.replace(/\D/g, '')}_Invoice</title> 
+                    <style>
+                        ${document.querySelector('style').textContent}
+                    </style>
+                </head>
+                <body class="print-invoice-body">
+                    <div class="invoice-container">
+                        <div class="print-header">
+                            <h1>JAI GANESHA CRACKERS</h1>
+                            <h2>SIMHADRIPURAM | TAX INVOICE</h2>
+                        </div>
+                        <div class="invoice-customer-details">
+                            <p><strong>Invoice Date:</strong> ${new Date().toLocaleDateString()}</p>
+                            <p><strong>Customer Name:</strong> ${sessionStorage.getItem('printName')}</p>
+                            <p><strong>Mobile:</strong> ${mobile}</p>
+                            <p><strong>Village/Area:</strong> ${sessionStorage.getItem('printVillage')}</p>
+                            <p><strong>Billed By:</strong> ${billerName}</p>
+                        </div>
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left;">Item Description</th>
+                                    <th style="width: 80px;">Unit Price (₹)</th>
+                                    <th style="width: 50px;">Qty</th>
+                                    <th style="width: 100px;">Sub Total (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${itemsHTML}
+                            </tbody>
+                            <tfoot>
+                                <tr class="invoice-sub-total-row">
+                                    <th colspan="3" style="text-align: right;">SUB TOTAL</th>
+                                    <th>${subTotal.toFixed(2)}</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="3" style="text-align: right;">DISCOUNT (${discountPercent.toFixed(0)}%)</th>
+                                    <th>- ${discountAmount.toFixed(2)}</th>
+                                </tr>
+                                <tr class="invoice-final-total-row">
+                                    <th colspan="3" style="text-align: right;">FINAL TOTAL</th>
+                                    <th>₹ ${finalTotal.toFixed(2)}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="invoice-footer">
+                            Thank you for shopping with JAI GANESHA CRACKERS! Happy Diwali! ✨
+                            <br>
+                            <span class="invoice-footer-contacts">
+                                **CONTACTS:** ${contactFooterHTML}
+                            </span>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        function printBillWithFilename() {
+            calculateTotal();
+            updatePrintInfo();
+
+            const billContent = generateBillHTML();
+            
+            const printWindow = window.open('', '_blank', 'height=800,width=800,status=yes,toolbar=no,menubar=no');
+            
+            printWindow.document.write(billContent);
+            printWindow.document.close();
+
+            printWindow.onload = function() {
+                printWindow.focus();
+                printWindow.print();
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderItems();
+            document.getElementById('billing-form').addEventListener('input', calculateTotal);
+            document.getElementById('discount-percent').addEventListener('input', calculateTotal);
+
+            calculateTotal(); 
+            
+            // Load state from session storage
+            document.getElementById('customer-name').value = sessionStorage.getItem('printName') || '';
+            document.getElementById('customer-village').value = sessionStorage.getItem('printVillage') || '';
+            document.getElementById('customer-mobile').value = sessionStorage.getItem('printMobile') || '';
+            document.getElementById('biller-name').value = sessionStorage.getItem('printBiller') || '';
+            updatePrintInfo();
+        });
+    </script>
+
+</body>
+</html>
