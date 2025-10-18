@@ -218,7 +218,7 @@
         <div id="billing-form">
             <div class="card-container">
                 <div class="card">
-                    <h3 class="card-header">SPARKLERS (SL. 1-7)</h3>
+                    <h3 class="card-header">SPARKLERS & GROUND ITEMS (SL. 1-19)</h3>
                     <table class="items-table" id="sparklers-table">
                         <thead>
                             <tr>
@@ -232,21 +232,7 @@
                     </table>
                 </div>
                 <div class="card">
-                    <h3 class="card-header">FLOWER POTS & GROUND ITEMS (SL. 8-18)</h3>
-                    <table class="items-table" id="flower-pots-table">
-                        <thead>
-                            <tr>
-                                <th>Item Name</th>
-                                <th style="width: 80px;">Price (₹)</th>
-                                <th style="width: 60px;">Qty</th>
-                                <th style="width: 90px;">Total (₹)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="flower-pots-list"></tbody>
-                    </table>
-                </div>
-                <div class="card">
-                    <h3 class="card-header">PENCILS & NOVELTY (SL. 19-27, 44, 45)</h3>
+                    <h3 class="card-header">PENCILS & AERIAL ROCKETS (SL. 20-33)</h3>
                     <table class="items-table" id="pencils-table">
                         <thead>
                             <tr>
@@ -259,24 +245,8 @@
                         <tbody id="pencils-list"></tbody>
                     </table>
                 </div>
-            </div>
-            <div class="card-container">
                 <div class="card">
-                    <h3 class="card-header">ROCKETS & AIRBORNE (SL. 28-32, 51-53, 80)</h3>
-                    <table class="items-table" id="rockets-table">
-                        <thead>
-                            <tr>
-                                <th>Item Name</th>
-                                <th style="width: 80px;">Price (₹)</th>
-                                <th style="width: 60px;">Qty</th>
-                                <th style="width: 90px;">Total (₹)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="rockets-list"></tbody>
-                    </table>
-                </div>
-                <div class="card">
-                    <h3 class="card-header">SOUND CRACKERS (SL. 33-38, 54-56, 81)</h3>
+                    <h3 class="card-header">SOUND & LAKSHMI BOMBS (SL. 34-46)</h3>
                     <table class="items-table" id="bombs-table">
                         <thead>
                             <tr>
@@ -289,8 +259,10 @@
                         <tbody id="bombs-list"></tbody>
                     </table>
                 </div>
+            </div>
+            <div class="card-container">
                 <div class="card">
-                    <h3 class="card-header">LAKSHMI, JAYAGAVI, & FANCY (SL. 39-43, 57-62)</h3>
+                    <h3 class="card-header">FANCY, AERIAL SHOTS & ROLLS (SL. 47-63)</h3>
                     <table class="items-table" id="shots-table">
                         <thead>
                             <tr>
@@ -303,10 +275,8 @@
                         <tbody id="shots-list"></tbody>
                     </table>
                 </div>
-            </div>
-            <div class="card-container">
-                <div class="card" style="flex: 1 1 100%;">
-                    <h3 class="card-header">GARLANDS, AERIAL SHELLS, CAPS & GIFT BOXES (SL. 46-50, 63-79, 82)</h3>
+                <div class="card" style="flex: 1 1 calc(66.66% - 20px);">
+                    <h3 class="card-header">GIFT BOXES & NOVELTY ITEMS (SL. 64-81)</h3>
                     <table class="items-table" id="misc-table">
                         <thead>
                             <tr>
@@ -338,9 +308,10 @@
     </div> 
 
     <script>
-        // CRACKER LIST - MAPPED TO CARD CATEGORIES
+        // CRACKER LIST - SYNCHRONIZED WITH crackers.html
+        // The 'id' is the official Serial Number (SL. No.)
         const CRACKER_DATA = [
-            // SPARKLERS (SL. 1-7)
+            // SPARKLERS & GROUND ITEMS (SL. 1-19) -> Mapped to 'sparklers' in this tool for a consolidated first card.
             { id: 1, name: "7CM ELECTRIC SPARKLERS", price: 20, category: "sparklers" }, 
             { id: 2, name: "10CM ELECTRIC SPARKLERS", price: 30, category: "sparklers" }, 
             { id: 3, name: "12CM ELECTRIC SPARKLERS", price: 35, category: "sparklers" }, 
@@ -348,110 +319,105 @@
             { id: 5, name: "15CM COLOUR SPARKLERS", price: 70, category: "sparklers" }, 
             { id: 6, name: "30CM ELECTRIC SPARKLERS", price: 65, category: "sparklers" }, 
             { id: 7, name: "30CM COLOUR SPARKLERS", price: 75, category: "sparklers" }, 
+            { id: 8, name: "EMROLDS", price: 80, category: "sparklers" }, 
+            { id: 9, name: "FLOWER POT SMALL (10)", price: 100, category: "sparklers" }, 
+            { id: 10, name: "FLOWER POT BIG (10)", price: 110, category: "sparklers" }, 
+            { id: 11, name: "FLOWER POT SPECIAL (10)", price: 145, category: "sparklers" }, 
+            { id: 12, name: "FLOWER POT ASHOKAJ (10)", price: 186, category: "sparklers" }, 
+            { id: 13, name: "FLOWER POT COLOUR CHOTI (10)", price: 340, category: "sparklers" }, 
+            { id: 14, name: "GROUND CHAKKAR BIG (10)", price: 80, category: "sparklers" }, 
+            { id: 15, name: "GROUND CHAKKAR SPECIAL (10)", price: 130, category: "sparklers" }, 
+            { id: 16, name: "CHAKKAR SPECIAL PLASTIC WHEEL (10)", price: 260, category: "sparklers" }, 
+            { id: 17, name: "GROUND CHAKKAR DELUXE (10)", price: 220, category: "sparklers" }, 
+            { id: 18, name: "CHAKKAR DELUXE PLASTIC WHEEL (10)", price: 246, category: "sparklers" }, 
+            { id: 19, name: "WIRE CHAKKAR", price: 286, category: "sparklers" }, 
 
-            // FLOWER POTS & GROUND ITEMS (SL. 8-18)
-            { id: 8, name: "FLOWER POT SMALL(10)", price: 100, category: "flower-pots" }, 
-            { id: 9, name: "FLOWER POT BIG(10)", price: 130, category: "flower-pots" }, 
-            { id: 10, name: "FLOWER POT SPECIAL(10)", price: 145, category: "flower-pots" }, 
-            { id: 11, name: "FLOWER POT ASHOKAJ(10)", price: 165, category: "flower-pots" }, 
-            { id: 12, name: "FLOWER POT COLOUR CHOTI(10)", price: 240, category: "flower-pots" }, 
-            { id: 13, name: "GROUND CHAKKAR BIG(10)", price: 175, category: "flower-pots" }, 
-            { id: 14, name: "GROUND CHAKKAR SPECIAL(10)", price: 190, category: "flower-pots" }, 
-            { id: 15, name: "G. CHAKKAR SPL. PLASTIC WHEEL(10)", price: 260, category: "flower-pots" }, 
-            { id: 16, name: "GROUND CHAKKAR DELUXE(10)", price: 310, category: "flower-pots" }, 
-            { id: 17, name: "G. CHAKKAR DELUX PLASTIC WHEEL(10)", price: 350, category: "flower-pots" }, 
-            { id: 18, name: "WIRE CHAKKAR", price: 310, category: "flower-pots" }, 
+            // PENCILS & AERIAL ROCKETS (SL. 20-33) -> Mapped to 'pencils'
+            { id: 20, name: "7CM PENCIL (10)", price: 42, category: "pencils" }, 
+            { id: 21, name: "10CM PENCIL (10)", price: 72, category: "pencils" }, 
+            { id: 22, name: "12CM PENCIL (10)", price: 104, category: "pencils" }, 
+            { id: 23, name: "15CM PENCIL (10)", price: 140, category: "pencils" }, 
+            { id: 24, name: "18CM PENCIL (10)", price: 176, category: "pencils" }, 
+            { id: 25, name: "SELF STICK", price: 100, category: "pencils" }, 
+            { id: 26, name: "18 INCH T-STAR (10)", price: 110, category: "pencils" }, 
+            { id: 27, name: "48 INCH T-STAR (10)", price: 180, category: "pencils" }, 
+            { id: 28, name: "KIT KAT DLX (10)", price: 80, category: "pencils" }, 
+            { id: 29, name: "BABY ROCKET (10)", price: 80, category: "pencils" }, 
+            { id: 30, name: "ROCKET BOMB (10)", price: 122, category: "pencils" }, 
+            { id: 31, name: "LINK ROCKET (10)", price: 250, category: "pencils" }, 
+            { id: 32, name: "2 SOUND ROCKET (10)", price: 270, category: "pencils" }, 
+            { id: 33, name: "3 SOUND ROCKET (10)", price: 290, category: "pencils" }, 
 
-            // PENCILS & NOVELTY (SL. 19-27, 44, 45)
-            { id: 19, name: "7CM PENCIL(10)", price: 45, category: "pencils" }, 
-            { id: 20, name: "10CM PENCIL(10)", price: 75, category: "pencils" }, 
-            { id: 21, name: "12CM PENCIL(10)", price: 100, category: "pencils" }, 
-            { id: 22, name: "15CM PENCIL(10)", price: 140, category: "pencils" }, 
-            { id: 23, name: "18CM PENCIL(10)", price: 200, category: "pencils" }, 
-            { id: 24, name: "SELF STICK", price: 100, category: "pencils" }, 
-            { id: 25, name: "18 INCH T-STAR(10)", price: 180, category: "pencils" }, 
-            { id: 26, name: "18 INCH T-STAR(10) - (Second Listing)", price: 180, category: "pencils" }, // Kept for completeness of the SL list
-            { id: 27, name: "KIT KAT DLX(10)", price: 80, category: "pencils" }, 
-            { id: 44, name: "BATHI", price: 20, category: "pencils" },// Moved to fit the card layout
-            { id: 45, name: "CHOTA FANCY", price: 80, category: "pencils" }, // Moved to fit the card layout
+            // SOUND & LAKSHMI BOMBS (SL. 34-46) -> Mapped to 'bombs'
+            { id: 34, name: "RED BIJLI (50)", price: 30, category: "bombs" }, 
+            { id: 35, name: "BIG BIJLI (100)", price: 60, category: "bombs" }, 
+            { id: 36, name: "HYDROGEN BOMB (10)", price: 116, category: "bombs" }, 
+            { id: 37, name: "KING OF KING (10)", price: 150, category: "bombs" }, 
+            { id: 38, name: "Classic Bomb(10)", price: 200, category: "bombs" }, 
+            { id: 39, name: "DINOSAR BOMB", price: 320, category: "bombs" }, 
+            { id: 40, name: "2/3 KURIVI", price: 20, category: "bombs" }, 
+            { id: 41, name: "1/2\" LAKSHMI", price: 35, category: "bombs" }, 
+            { id: 42, name: "3\"1/2 LAKSHMI (5)", price: 23, category: "bombs" }, 
+            { id: 43, name: "4\" DLX LAKSHMI", price: 46, category: "bombs" }, 
+            { id: 44, name: "5\" DLX LAKSHMI (5)", price: 60, category: "bombs" }, 
+            { id: 45, name: "BATHI", price: 15, category: "bombs" }, 
+            { id: 46, name: "CHOTA FANCY", price: 80, category: "bombs" }, 
 
-            // ROCKETS & AIRBORNE (SL. 28-32, 51-53, 80)
-            { id: 28, name: "BABY ROCKET(10)", price: 90, category: "rockets" }, 
-            { id: 29, name: "ROCKET BOMB(10)", price: 125, category: "rockets" }, 
-            { id: 30, name: "LINK ROCKET(10)", price: 270, category: "rockets" }, 
-            { id: 31, name: "3 SOUND ROCKET(10)", price: 270, category: "rockets" }, 
-            { id: 32, name: "3 SOUND ROCKET(10) - (Second Listing)", price: 270, category: "rockets" }, // Kept for completeness of the SL list
-            { id: 51, name: "SPINNER(1)", price: 300, category: "rockets" }, 
-            { id: 52, name: "SPINNER(10)", price: 160, category: "rockets" }, 
-            { id: 53, name: "BUTTERFLY(10)", price: 180, category: "rockets" }, 
-            { id: 80, name: "SKY LANTHER", price: 1200, category: "rockets" }, 
+            // FANCY, AERIAL SHOTS & ROLLS (SL. 47-63) -> Mapped to 'shots'
+            { id: 47, name: "2\"COMBET (3)", price: 404, category: "shots" }, 
+            { id: 48, name: "2\"COMMET(1)", price: 190, category: "shots" }, 
+            { id: 49, name: "4\"DOUBLE BALL", price: 1020, category: "shots" }, 
+            { id: 50, name: "1000 WALA", price: 282, category: "shots" }, 
+            { id: 51, name: "2000 WALA", price: 566, category: "shots" }, 
+            { id: 52, name: "5000 WALA", price: 1420, category: "shots" }, 
+            { id: 53, name: "SPINNER (10)", price: 160, category: "shots" }, 
+            { id: 54, name: "BUTTERFLY (10)", price: 100, category: "shots" }, 
+            { id: 55, name: "PAPER BOMB (1/4KG)", price: 106, category: "shots" }, 
+            { id: 56, name: "PAPER BOMB (1/2KG)", price: 212, category: "shots" }, 
+            { id: 57, name: "PAPER BOMB (1KG)", price: 425, category: "shots" }, 
+            { id: 58, name: "PHOTO FLASH", price: 90, category: "shots" }, 
+            { id: 59, name: "GANGA JAMUNA", price: 120, category: "shots" }, 
+            { id: 60, name: "7 COLOR SHOT", price: 155, category: "shots" }, 
+            { id: 61, name: "12 SHOT MULTI COLOUR", price: 380, category: "shots" }, 
+            { id: 62, name: "30 SHOT", price: 870, category: "shots" }, 
+            { id: 63, name: "60 SHOT", price: 1740, category: "shots" }, 
 
-            // BOMBS (SOUND CRACKERS) (SL. 33-38, 54-56, 81)
-            { id: 33, name: "RED BIJLI(50)", price: 30, category: "bombs" }, 
-            { id: 34, name: "BIG BIJLI(100)", price: 60, category: "bombs" }, 
-            { id: 35, name: "HYDROGEN BOMB(10)", price: 140, category: "bombs" }, 
-            { id: 36, name: "KING OF KING(10)", price: 150, category: "bombs" }, 
-            { id: 37, name: "JUPITER BOMB(10)", price: 200, category: "bombs" }, 
-            { id: 38, name: "DINOSAR BOMB", price: 320, category: "bombs" }, 
-            { id: 54, name: "PAPER BOMB(1/4KG)", price: 70, category: "bombs" }, 
-            { id: 55, name: "PAPER BOMB(1/2KG)", price: 215, category: "bombs" }, 
-            { id: 56, name: "PAPER BOMB(1KG)", price: 425, category: "bombs" }, 
-            { id: 81, name: "CARROT BOMB(10)", price: 160, category: "bombs" }, 
-
-            // LAKSHMI, JAYAGAVI, & FANCY (SL. 39-43, 57-62)
-            { id: 39, name: "2\" JAYAGAVI", price: 80, category: "shots" }, 
-            { id: 40, name: "1/2\" LAKSHMI", price: 35, category: "shots" }, 
-            { id: 41, name: "1\"GOLD LAKSHMI DLX(5)", price: 50, category: "shots" }, 
-            { id: 42, name: "3\" DLX LAKSHMI", price: 50, category: "shots" }, 
-            { id: 43, name: "5\" DLX LAKSHMI(5)", price: 60, category: "shots" }, 
-            { id: 57, name: "PHOTO FLASH", price: 90, category: "shots" }, 
-            { id: 58, name: "GOLI JAMUNA", price: 120, category: "shots" }, 
-            { id: 59, name: "7 COLOR SHOT", price: 155, category: "shots" }, 
-            { id: 60, name: "12 SHOT MULTI COLOUR", price: 380, category: "shots" }, 
-            { id: 61, name: "30 SHOT", price: 910, category: "shots" }, 
-            { id: 62, name: "60 SHOT", price: 1750, category: "shots" }, 
-
-            // GARLANDS, AERIAL SHELLS, CAPS & GIFT BOXES (SL. 46-50, 63-79, 82)
-            { id: 46, name: "2\"COMBET(14)", price: 410, category: "misc" }, 
-            { id: 47, name: "4\"COMBET(4)", price: 190, category: "misc" }, 
-            { id: 48, name: "4\"DOUBLE BALL", price: 1020, category: "misc" }, 
-            { id: 49, name: "1000 WALA", price: 290, category: "misc" }, 
-            { id: 50, name: "2000 WALA", price: 570, category: "misc" }, 
-            // GIFT BOXES
-            { id: 63, name: "18 ITEM GIFT BOX", price: 680, category: "misc" }, 
-            { id: 64, name: "21 ITEM GIFT BOX", price: 820, category: "misc" }, 
-            { id: 65, name: "25 ITEM GIFT BOX", price: 990, category: "misc" }, 
-            { id: 66, name: "35 ITEM GIFT BOX", price: 1545, category: "misc" }, 
-            { id: 67, name: "45 ITEM GIFT BOX", price: 2250, category: "misc" }, 
-            { id: 68, name: "55 ITEM GIFT BOX", price: 2960, category: "misc" },
-            // CAPS/ACCESSORIES
-            { id: 69, name: "ROLL CAPS", price: 125, category: "misc" }, 
-            { id: 70, name: "POP POP", price: 220, category: "misc" }, 
-            { id: 71, name: "BIG POP POP", price: 300, category: "misc" }, 
+            // GIFT BOXES & NOVELTY ITEMS (SL. 64-81) -> Mapped to 'misc'
+            { id: 64, name: "16 ITEM GIFT BOX", price: 680, category: "misc" }, 
+            { id: 65, name: "21 ITEM GIFT BOX", price: 820, category: "misc" }, 
+            { id: 66, name: "25 ITEM GIFT BOX", price: 990, category: "misc" }, 
+            { id: 67, name: "35 ITEM GIFT BOX", price: 1545, category: "misc" }, 
+            { id: 68, name: "45 ITEM GIFT BOX", price: 2250, category: "misc" }, 
+            { id: 69, name: "55 ITEM GIFT BOX", price: 2960, category: "misc" },
+            { id: 70, name: "ROLL CAPS(1Box)", price: 128, category: "misc" }, 
+            { id: 71, name: "POP POP(1 box)", price: 620, category: "misc" }, 
             { id: 72, name: "THROWING BALL", price: 240, category: "misc" }, 
-            { id: 73, name: "RING CAPS", price: 20, category: "misc" }, 
-            { id: 74, name: "LADDY FLOWER POT SMALL", price: 480, category: "misc" }, 
-            { id: 75, name: "LADDY FLOWER POT BIG", price: 960, category: "misc" }, 
-            { id: 76, name: "MINI KIRAN(5PCS)", price: 240, category: "misc" }, 
-            { id: 77, name: "PEACOCK LATCHER", price: 170, category: "misc" }, 
-            { id: 78, name: "TIN FOUNTAIN", price: 175, category: "misc" }, 
+            { id: 73, name: "RING CAPS", price: 15, category: "misc" }, 
+            { id: 74, name: "LADDU FLOWER POT SMALL(1Box)", price: 480, category: "misc" }, 
+            { id: 75, name: "LADDU FLOWER POT BIG(1Box)", price: 960, category: "misc" }, 
+            { id: 76, name: "MINI SIRAN (5PCS)", price: 250, category: "misc" }, 
+            { id: 77, name: "PEACOCK FEATHER", price: 168, category: "misc" }, 
+            { id: 78, name: "TIN FOUNTAIN", price: 162, category: "misc" }, 
             { id: 79, name: "TREESUM FLOWER POT", price: 240, category: "misc" }, 
-            
+            { id: 80, name: "SKY LANTHER", price: 120, category: "misc" }, 
+            { id: 81, name: "CARROT BOMB (10)", price: 600, category: "misc" }, 
         ];
 
         let itemQuantities = new Map();
 
         function renderItems() {
+            // Note: Categories are simplified for the billing tool's card layout.
+            // 'sparklers' now covers the first list (SL 1-19).
+            // 'pencils' now covers the second list (SL 20-33).
+            // 'bombs' now covers the third list (SL 34-46).
+            // 'shots' now covers the fourth list (SL 47-63).
+            // 'misc' now covers the fifth list (SL 64-81).
             const categoryMapping = {
                 "sparklers": document.getElementById("sparklers-list"), 
-                "flower-pots": document.getElementById("flower-pots-list"),
                 "pencils": document.getElementById("pencils-list"),
-                "rockets": document.getElementById("rockets-list"), 
                 "bombs": document.getElementById("bombs-list"),
                 "shots": document.getElementById("shots-list"),
                 "misc": document.getElementById("misc-list"),
-                // "ground-items": document.getElementById("ground-items-list"), // Combined into flower-pots
-                // "garlands": document.getElementById("garlands-list"), // Combined into misc
             };
 
             // Clear existing rows
@@ -701,4 +667,3 @@
 
 </body>
 </html>
-
