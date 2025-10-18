@@ -160,10 +160,11 @@
 
         <div id="customer-info-section">
             <div class="customer-input-group"><label for="customer-name">Customer Name</label><input type="text" id="customer-name" placeholder="Enter name" oninput="updatePrintInfo()"></div>
-            
             <div class="customer-input-group">
-                <label for="customer-village">Village / Area</label>
-                <select id="customer-village" onchange="updatePrintInfo()">
+    <label for="customer-village">Village / Area</label>
+    <select id="customer-village" onchange="toggleManualInput(this.value); updatePrintInfo()">
+        <option value="" disabled selected>Select Village</option>
+        <option value="Other">Other / Manual Entry</option>
                     <option value="" disabled selected>Select Village</option>
                     <option value="Agraharam">Agraharam</option>
                     <option value="Ankalammagudur">Ankalammagudur</option>
@@ -184,8 +185,11 @@
                     <option value="Ravulakolanu">Ravulakolanu</option>
                     <option value="Simhadripuram">Simhadripuram</option>
                     <option value="Sunkesula">Sunkesula</option>
-                </select>
-            </div>
+    </select>
+    <input type="text" id="manual-village-name" placeholder="Enter village name" style="display: none; margin-top: 5px;" oninput="updatePrintInfo()">
+</div>
+
+            
             
             <div class="customer-input-group"><label for="customer-mobile">Customer Mobile</label><input type="tel" id="customer-mobile" placeholder="Enter number" oninput="updatePrintInfo()"></div>
             
@@ -663,7 +667,23 @@
             document.getElementById('biller-name').value = sessionStorage.getItem('printBiller') || '';
             updatePrintInfo();
         });
+        function toggleManualInput(selectedValue) {
+    const manualInput = document.getElementById('manual-village-name');
+
+    if (selectedValue === 'Other') {
+        manualInput.style.display = 'block'; // Show the text input
+        manualInput.setAttribute('required', 'true'); // Make it mandatory
+    } else {
+        manualInput.style.display = 'none';  // Hide the text input
+        manualInput.removeAttribute('required'); // Remove mandatory check
+        manualInput.value = ''; // Clear the input field
+    }
+    // You would still need your existing updatePrintInfo() function logic here
+}
+// Note: This function replaces the basic onchange="updatePrintInfo()" you had.
+        
     </script>
 
 </body>
 </html>
+
