@@ -660,15 +660,172 @@
 
             calculateTotal(); 
             
-            // Load state from session storage
-            document.getElementById('customer-name').value = sessionStorage.getItem('printName') || '';
-            document.getElementById('customer-village').value = sessionStorage.getItem('printVillage') || '';
-            document.getElementById('customer-mobile').value = sessionStorage.getItem('printMobile') || '';
-            document.getElementById('biller-name').value = sessionStorage.getItem('printBiller') || '';
-            updatePrintInfo();
-        });
-        function toggleManualInput(selectedValue) {
+/* --- UPDATED: Function to save printing info, handling manual village input --- */
+function updatePrintInfo() {
+    const selectedVillageElement = document.getElementById('customer-village');
+    const manualVillageElement = document.getElementById('manual-village-name');
+
+    // 1. Determine the final village name
+    let finalVillage = '';
+    
+    // Check if the dropdown is set to 'Other' AND the manual field is visible
+    if (selectedVillageElement && selectedVillageElement.value === 'Other' && manualVillageElement && manualVillageElement.style.display === 'block') {
+        // Use the manual input value
+        finalVillage = manualVillageElement.value.trim() || 'N/A';
+    } else if (selectedVillageElement) {
+        // Use the dropdown value
+        finalVillage = selectedVillageElement.value || 'N/A';
+    } else {
+        finalVillage = 'N/A';
+    }
+
+    // 2. Save all printing-related details to sessionStorage
+    sessionStorage.setItem('printName', document.getElementById('customer-name').value || 'N/A');
+    sessionStorage.setItem('printVillage', finalVillage); // <-- UPDATED LOGIC HERE
+    sessionStorage.setItem('printMobile', document.getElementById('customer-mobile').value || 'INVOICE');
+    sessionStorage.setItem('printBiller', document.getElementById('biller-name').value || 'N/A');
+}
+
+/* --- EXISTING: Function to generate bill HTML (No changes needed for village logic) --- */
+function generateBillHTML() {
+    let subTotal = 0;
+    let itemsHTML = '';
+    
+    const discountPercent = parseFloat(document.getElementById('discount-percent').value) || 0;
+    const itemsToBill = [];
+
+    // NOTE: CRACKER_DATA and itemQuantities must be defined globally
+    itemQuantities.forEach((item, index) => {
+        if (item.qty > 0) {
+            itemsToBill.push({ ...item, id: CRACKER_DATA[index].id }); // Add SL ID for sorting
+        }
+    });
+    
+    // Sort items by original SL ID
+    itemsToBill.sort((a, b) => a.id - b.id);
+
+
+    itemsToBill.forEach(item => {
+        const itemTotal = item.qty * item.price;
+        subTotal += itemTotal;
+
+        itemsHTML += `
+            <tr>
+                <td style="width: 25px;">${item.id}.</td>
+                <td>${item.name}</td>
+                <td>${item.price.toFixed(2)}</td>
+                <td>${item.qty}</td>
+                <td>${itemTotal.toFixed(2)}</td>
+            </tr>
+        `;
+    });
+
+
+    if (itemsHTML === '') {
+        itemsHTML = '<tr><td colspan="5" style="text-align: center; color: #555;">No items selected.</td></tr>';
+    }
+
+    const discountAmount = subTotal * (discountPercent / 100);
+    const finalTotal = subTotal - discountAmount;
+    const mobile = sessionStorage.getItem('printMobile') || 'INVOICE';
+    const biller = sessionStorage.getItem('printBiller') || 'N/A';
+    const billerName = biller.split(' (')[0] || biller;
+
+    // Extract all contacts for the footer
+    const allContacts = [
+        { name: 'SUBBA REDDY', mobile: '7286936250' },
+        { name: 'ARUN KUMAR REDDY', mobile: '9951186806' },
+        { name: 'AHKIL REDDY', mobile: '9491779437' },
+    ];
+    const contactFooterHTML = allContacts.map(c => `${c.name} (${c.mobile})`).join(' | ');
+
+    // Generate the full HTML content for the new print window
+    return `
+        <html lang="en">
+        <head>
+            <title>${mobile.replace(/\D/g, '')}_Invoice</title> 
+            <style>
+                ${document.querySelector('style').textContent}
+                .invoice-table th, .invoice-table td { border: 1px solid #ccc; padding: 8px; }
+            </style>
+        </head>
+        <body class="print-invoice-body">
+            <div class="invoice-container">
+                <div class="print-header">
+                    <h1>JAI GANESHA CRACKERS</h1>
+                    <h2>SIMHADRIPURAM | TAX INVOICE</h2>
+                </div>
+                <div class="invoice-customer-details">
+                    <p><strong>Invoice Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>Customer Name:</strong> ${sessionStorage.getItem('printName')}</p>
+                    <p><strong>Mobile:</strong> ${mobile}</p>
+                    <p><strong>Village/Area:</strong> ${sessionStorage.getItem('printVillage')}</p>
+                    <p><strong>Billed By:</strong> ${billerName}</p>
+                </div>
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25px;">SL.</th>
+                            <th style="text-align: left;">Item Description</th>
+                            <th style="width: 80px;">Unit Price (₹)</th>
+                            <th style="width: 50px;">Qty</th>
+                            <th style="width: 100px;">Sub Total (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHTML}
+                    </tbody>
+                    <tfoot>
+                        <tr class="invoice-sub-total-row">
+                            <th colspan="4" style="text-align: right;">SUB TOTAL</th>
+                            <th>${subTotal.toFixed(2)}</th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" style="text-align: right;">DISCOUNT (${discountPercent.toFixed(0)}%)</th>
+                            <th>- ${discountAmount.toFixed(2)}</th>
+                        </tr>
+                        <tr class="invoice-final-total-row">
+                            <th colspan="4" style="text-align: right;">FINAL TOTAL</th>
+                            <th>₹ ${finalTotal.toFixed(2)}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="invoice-footer">
+                    Thank you for shopping with JAI GANESHA CRACKERS! Happy Diwali! ✨
+                    <br>
+                    <span class="invoice-footer-contacts">
+                        **CONTACTS:** ${contactFooterHTML}
+                    </span>
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
+}
+
+/* --- EXISTING: Function to handle printing (No changes needed) --- */
+function printBillWithFilename() {
+    calculateTotal();
+    updatePrintInfo();
+
+    const billContent = generateBillHTML();
+    
+    const printWindow = window.open('', '_blank', 'height=800,width=800,status=yes,toolbar=no,menubar=no');
+    
+    printWindow.document.write(billContent);
+    printWindow.document.close();
+
+    printWindow.onload = function() {
+        printWindow.focus();
+        printWindow.print();
+    };
+}
+
+/* --- UPDATED: Function to toggle manual input and trigger save --- */
+function toggleManualInput(selectedValue) {
     const manualInput = document.getElementById('manual-village-name');
+
+    if (!manualInput) return; // Exit if manual input field isn't in the HTML
 
     if (selectedValue === 'Other') {
         manualInput.style.display = 'block'; // Show the text input
@@ -676,14 +833,74 @@
     } else {
         manualInput.style.display = 'none';  // Hide the text input
         manualInput.removeAttribute('required'); // Remove mandatory check
-        manualInput.value = ''; // Clear the input field
+        // Do NOT clear the value here, as we might need it when loading state.
+        // manualInput.value = ''; 
     }
-    // You would still need your existing updatePrintInfo() function logic here
+    // Call updatePrintInfo() to ensure the change is saved
+    updatePrintInfo();
 }
-// Note: This function replaces the basic onchange="updatePrintInfo()" you had.
+
+
+/* --- UPDATED: DOMContentLoaded listener for initialization --- */
+document.addEventListener('DOMContentLoaded', () => {
+    // NOTE: renderItems and calculateTotal must be defined elsewhere
+    // renderItems(); 
+
+    // Listeners for automatic saving/calculation
+    document.getElementById('billing-form').addEventListener('input', calculateTotal);
+    document.getElementById('discount-percent').addEventListener('input', calculateTotal);
+
+    // Add listener for typing into the manual village field
+    const manualVillageInput = document.getElementById('manual-village-name');
+    if (manualVillageInput) {
+        manualVillageInput.addEventListener('input', updatePrintInfo);
+    }
+    
+    calculateTotal(); 
+    
+    // Load state from session storage
+    document.getElementById('customer-name').value = sessionStorage.getItem('printName') || '';
+
+    const villageSelect = document.getElementById('customer-village');
+    const savedVillage = sessionStorage.getItem('printVillage') || '';
+    
+    // Logic to correctly load the saved village name
+    if (villageSelect) {
+        // Check if the saved village value exists as an option in the dropdown
+        const isDropdownOption = Array.from(villageSelect.options).some(option => option.value === savedVillage);
         
+        if (isDropdownOption) {
+            // It's a standard village name
+            villageSelect.value = savedVillage;
+            toggleManualInput(savedVillage); // Hides manual input
+        } else if (savedVillage && savedVillage !== 'N/A') {
+            // It's a manual entry not in the list
+            villageSelect.value = 'Other'; // Set dropdown to 'Other'
+            toggleManualInput('Other');     // Shows manual input field
+            if (manualVillageInput) {
+                manualVillageInput.value = savedVillage; // Set the saved value into the text field
+            }
+        } else {
+            // No saved village or 'N/A'
+            villageSelect.value = ''; 
+            toggleManualInput('');
+        }
+    }
+
+
+    document.getElementById('customer-mobile').value = sessionStorage.getItem('printMobile') || '';
+    document.getElementById('biller-name').value = sessionStorage.getItem('printBiller') || '';
+    
+    // Final save/update after loading all fields
+    updatePrintInfo();
+});
+
+// NOTE: calculateTotal(), renderItems(), CRACKER_DATA, and itemQuantities 
+// must be defined elsewhere in your code for this to run completely.
+            
     </script>
 
 </body>
 </html>
+
 
